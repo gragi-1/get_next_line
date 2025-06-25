@@ -1,55 +1,76 @@
-# Get Next Line
+# Get Next Line 🚀
 
-## Overview
-
-**Get Next Line** is a robust C library function that reads a line from a file descriptor, handling input efficiently and safely. Developed as part of the 42 School curriculum, this project demonstrates advanced file handling, dynamic memory management, and the use of static variables in C. It is designed to be both a practical utility and an educational exercise in low-level programming.
+## Table of Contents 📚
+1. [Introduction](#introduction)
+2. [Academic Context](#academic-context)
+3. [Features](#features)
+4. [How It Works](#how-it-works)
+5. [Installation & Compilation](#installation--compilation)
+6. [Usage](#usage)
+    - [Standard Version](#standard-version)
+    - [Bonus Version (Multiple FDs)](#bonus-version-multiple-fds)
+7. [API Reference](#api-reference)
+8. [Customization](#customization)
+9. [Testing & Troubleshooting](#testing--troubleshooting)
+10. [FAQ](#faq)
+11. [Integration Tips](#integration-tips)
+12. [License](#license)
+13. [Acknowledgments](#acknowledgments)
 
 ---
 
-## Features
+## Introduction ✨
 
-- **Reads one line at a time** from any file descriptor (including files, stdin, pipes, etc.)
-- **Handles lines of arbitrary length** (not limited by buffer size)
-- **Efficient memory management**: dynamically allocates only what is needed
-- **Bonus: Supports multiple file descriptors simultaneously** (see Bonus section)
-- **Customizable buffer size** via `BUFFER_SIZE` macro
+**Get Next Line** is a C library function that reads a line from a file descriptor, returning it as a dynamically allocated string. It is designed to handle input efficiently, safely, and flexibly, making it a valuable utility for C programmers.
+
+---
+
+## Academic Context 🎓
+
+This project is part of the 42 School curriculum, where students are challenged to implement robust, reusable C functions. The main learning objectives include:
+- Mastery of file I/O in C
+- Dynamic memory management
+- Use of static variables for persistent state
+- Clean, modular code design
+
+---
+
+## Features 🛠️
+- **Reads one line at a time** from any file descriptor (file, stdin, pipe, etc.)
+- **Handles lines of any length** (not limited by buffer size)
+- **Efficient memory usage**
+- **Bonus: Supports multiple file descriptors simultaneously**
+- **Customizable buffer size** via `BUFFER_SIZE`
 - **No memory leaks** (valgrind-clean)
 
 ---
 
-## How It Works
+## How It Works ⚙️
 
-`get_next_line` reads from a file descriptor until it encounters a newline (`\n`) or EOF, returning the line (including the newline, if present). It uses a static variable to store leftover data between calls, ensuring that lines are returned correctly even if they span multiple reads.
+`get_next_line` reads from a file descriptor until it finds a newline (`\n`) or reaches EOF. It uses a static buffer to store leftover data between calls, ensuring that lines are returned correctly even if they span multiple reads. The bonus version manages a separate buffer for each file descriptor, allowing concurrent reads.
 
 ---
 
-## Installation & Compilation
+## Installation & Compilation 🏗️
 
-A `Makefile` is provided for easy compilation. To build the library and test program:
+A `Makefile` is provided for easy compilation:
 
 ```bash
 make all
 ```
 
-This will compile the necessary source files. You can clean up object files with:
-
+To clean up object files:
 ```bash
 make clean
 ```
 
 ---
 
-## Usage
+## Usage 💡
 
-To use `get_next_line` in your project:
+### Standard Version
 
-1. Include the header:
-    ```c
-    #include "get_next_line.h"
-    ```
-2. Compile `get_next_line.c` and `get_next_line_utils.c` with your sources.
-
-### Example
+Include the header and compile the standard source files:
 
 ```c
 #include "get_next_line.h"
@@ -78,11 +99,41 @@ int main(int argc, char **argv) {
 }
 ```
 
+### Bonus Version (Multiple FDs) 🔄
+
+To read from multiple file descriptors at once, use the bonus files:
+
+```c
+#include "get_next_line_bonus.h"
+#include <fcntl.h>
+#include <stdio.h>
+
+int main(void) {
+    int fd1 = open("file1.txt", O_RDONLY);
+    int fd2 = open("file2.txt", O_RDONLY);
+    char *line1, *line2;
+
+    while ((line1 = get_next_line(fd1)) || (line2 = get_next_line(fd2))) {
+        if (line1) {
+            printf("file1: %s", line1);
+            free(line1);
+        }
+        if (line2) {
+            printf("file2: %s", line2);
+            free(line2);
+        }
+    }
+    close(fd1);
+    close(fd2);
+    return 0;
+}
+```
+
 ---
 
-## API Documentation
+## API Reference 📑
 
-### Header: `get_next_line.h`
+### Header: `get_next_line.h` / `get_next_line_bonus.h`
 
 ```c
 char *get_next_line(int fd);
@@ -90,7 +141,7 @@ char *get_next_line(int fd);
 - **fd**: File descriptor to read from
 - **Returns**: Next line read from `fd` (including `\n` if present), or `NULL` on EOF or error. The returned string must be freed by the caller.
 
-#### Utility Functions (internal use):
+#### Internal Utility Functions
 - `size_t ft_strlen(const char *s);`
 - `char *ft_strchr(const char *s, int c);`
 - `char *ft_strdup(const char *s1);`
@@ -99,28 +150,19 @@ char *get_next_line(int fd);
 
 ---
 
-## Customization
+## Customization 🧩
 
-You can set the buffer size used for reading by defining the `BUFFER_SIZE` macro before compilation. For example:
+Set the buffer size by defining the `BUFFER_SIZE` macro before compilation:
 
 ```c
 #define BUFFER_SIZE 1024
 #include "get_next_line.h"
 ```
-Or by adding `-DBUFFER_SIZE=1024` to your compiler flags.
+Or add `-DBUFFER_SIZE=1024` to your compiler flags.
 
 ---
 
-## Bonus Part: Multiple File Descriptors
-
-The bonus version (`get_next_line_bonus.c` and `get_next_line_bonus.h`) supports reading from multiple file descriptors simultaneously. This is achieved by maintaining a separate static buffer for each descriptor.
-
-- To use the bonus version, include `get_next_line_bonus.h` and compile the bonus source files.
-- The API remains the same: `char *get_next_line(int fd);`
-
----
-
-## Testing & Troubleshooting
+## Testing & Troubleshooting 🧪
 
 - Test with files of various sizes, empty files, and files without a trailing newline.
 - Check for memory leaks using [Valgrind](https://valgrind.org/):
@@ -131,14 +173,39 @@ The bonus version (`get_next_line_bonus.c` and `get_next_line_bonus.h`) supports
 
 ---
 
-## License
+## FAQ ❓
+
+**Q: Does `get_next_line` work with stdin or pipes?**
+A: Yes! You can use it with any valid file descriptor, including stdin (fd = 0) and pipes.
+
+**Q: What happens if the file does not end with a newline?**
+A: The last line will still be returned, even if it does not end with `\n`.
+
+**Q: Is the returned string always dynamically allocated?**
+A: Yes. You must `free()` each line after use to avoid memory leaks.
+
+**Q: How many file descriptors can the bonus version handle?**
+A: Up to 1024 (by default, can be changed in the code).
+
+---
+
+## Integration Tips 🔗
+
+- Add the source and header files to your project and include the appropriate header.
+- Use the Makefile as a reference for your own build system.
+- For best performance, tune `BUFFER_SIZE` to match your typical line length or I/O pattern.
+- Always check for `NULL` returns to handle EOF and errors gracefully.
+
+---
+
+## License 📄
 
 This project is released under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-## Acknowledgments
-
+## Acknowledgments 🙏
 - Developed as part of the 42 School curriculum.
 - Inspired by the need for robust file reading utilities in C.
-- Special thanks to the 42 community for support and feedback.
+- Thanks to the 42 community for support and feedback.
+
