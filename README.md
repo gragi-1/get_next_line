@@ -1,24 +1,5 @@
 # Get Next Line 🚀
 
-## Table of Contents 📚
-1. [Introduction](#introduction)
-2. [Academic Context](#academic-context)
-3. [Features](#features)
-4. [How It Works](#how-it-works)
-5. [Installation & Compilation](#installation--compilation)
-6. [Usage](#usage)
-    - [Standard Version](#standard-version)
-    - [Bonus Version (Multiple FDs)](#bonus-version-multiple-fds)
-7. [API Reference](#api-reference)
-8. [Customization](#customization)
-9. [Testing & Troubleshooting](#testing--troubleshooting)
-10. [FAQ](#faq)
-11. [Integration Tips](#integration-tips)
-12. [License](#license)
-13. [Acknowledgments](#acknowledgments)
-
----
-
 ## Introduction ✨
 
 **Get Next Line** is a C library function that reads a line from a file descriptor, returning it as a dynamically allocated string. It is designed to handle input efficiently, safely, and flexibly, making it a valuable utility for C programmers.
